@@ -1,0 +1,196 @@
+<html>
+<head>
+<style type="text/css">
+	
+	body {
+		position:fixed;
+		padding-top: 10vw;
+		top:0;
+		width:100%;
+		height:100%;
+	}
+
+</style>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4712449491588047"
+     crossorigin="anonymous"></script>
+ </head>
+<body style="background-color: #243859;">
+
+	<script>
+		
+	</script>
+<center>
+
+
+<iframe src="https://rcm-na.amazon-adsystem.com/e/cm?o=1&p=26&l=ur1&category=software&banner=1ZJ37126PPXGN5760HG2&f=ifr&linkID=f2e99a08dc3dda6f2a988fdbb1b9a066&t=robggggg-20&tracking_id=robggggg-20" width="468" height="60" scrolling="no" border="0" marginwidth="0" style="border:none;" frameborder="0" sandbox="allow-scripts allow-same-origin allow-popups allow-top-navigation-by-user-activation"></iframe>
+
+
+</center>
+<canvas id="myCanvas" width="800" height="1200"></canvas>
+
+<script>
+
+const sound = true;
+function randomIntFromInterval(min, max) { // min and max included 
+  return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
+const rndInt = randomIntFromInterval(200, 400)
+//console.log(rndInt)
+
+let canvas = document.getElementById("myCanvas");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let context = canvas.getContext("2d");
+context.font = 'bold 60px sans-serif';
+let scrollCounter, cameraY, current, mode, xSpeed;
+let ySpeed = 5;
+let height = 50;
+let boxes = [];
+boxes[0] = {
+  x: 300,
+  y: 150,
+  width: rndInt
+};
+let debris = {
+  x: 0,
+  width: 0
+};
+ 
+function newBox() {
+var audio = new Audio("h1.mp3");
+
+		document.onclick = function() {
+			if (sound == true){
+				audio.play();
+			} else {
+				console.log('NOPE')
+			}
+		  
+		}
+  boxes[current] = {
+    x: 0,
+    y: (current + 10) * height,
+    width: boxes[current - 1].width
+  };
+}
+ 
+function gameOver() {
+  mode = 'gameOver';
+  var audio2 = new Audio("end.mp3");
+
+		
+		  if (sound == true){
+				audio2.play();
+			} else {
+				console.log('NOPE')
+			}
+		 
+  context.fillText('Click To Start Again!', window.innerWidth/4.3, canvas.height  - 500);
+}
+ 
+function animate() {
+
+  if (mode != 'gameOver') {
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.fillText( (current - 1).toString(), canvas.width / 2, canvas.height - 350);
+    for (let n = 0; n < boxes.length; n++) {
+      let box = boxes[n];
+      //console.log(n)
+      if(n > 20 ) {
+      	//restart() 
+      }
+      context.fillStyle = 'rgb(' + n + 5 + ',' + n + 5 + ',' + n + 5 + ')';
+      document.body.style.backgroundColor = 'rgb(' + n - 5 + ',' + n - 10 + ',' + n / 2 + ')';
+     
+        // context.fillStyle = '#639ad6';
+ context.fillRect(box.x, 800 - box.y + cameraY, box.width, height);
+    }
+    context.fillStyle = '#6fb0e8'; // Debris colour
+    context.fillRect(debris.x, 800 - debris.y + cameraY, debris.width, height);
+    if (mode == 'bounce') {
+      boxes[current].x = boxes[current].x + xSpeed;
+      if (xSpeed > 0 && boxes[current].x + boxes[current].width > canvas.width)
+        xSpeed = -xSpeed;
+      if (xSpeed < 0 && boxes[current].x < 0)
+        xSpeed = -xSpeed;
+    }
+    if (mode == 'fall') {
+    	//console.log(height)
+      boxes[current].y = boxes[current].y - ySpeed;
+      if (boxes[current].y == boxes[current - 1].y + height) {
+        mode = 'bounce';
+        let difference = boxes[current].x - boxes[current - 1].x;
+        console.log(difference)
+        if(difference == 0 || difference == 1 || difference == -1) {
+        	console.log('GROWW!')
+        	boxes[current].width = boxes[current].width + 50;
+        }
+        if (Math.abs(difference) >= boxes[current].width) {
+          gameOver();
+        }
+        debris = {
+          y: boxes[current].y,
+          width: difference
+        };
+        if (boxes[current].x > boxes[current - 1].x) {
+          boxes[current].width = boxes[current].width - difference;
+          //debris.x = boxes[current].x + boxes[current].width;
+        } else {
+          //debris.x = boxes[current].x - difference;
+          boxes[current].width = boxes[current].width + difference;
+          boxes[current].x = boxes[current - 1].x;
+        }
+        if (xSpeed > 0)
+          xSpeed++;
+        else
+          xSpeed--;
+        current++;
+        scrollCounter = height;
+        newBox();
+      }
+    }
+    debris.y = debris.y - ySpeed;
+    if (scrollCounter) {
+      cameraY++;
+      scrollCounter--;
+    }
+  }
+  window.requestAnimationFrame(animate);
+}
+ 
+function restart() {
+  boxes.splice(1, boxes.length - 1);
+  mode = 'bounce';
+  cameraY = 0;
+  scrollCounter = 0;
+  xSpeed = 5;
+  current = 1;
+  newBox();
+  debris.y = 0;
+}
+ 
+canvas.onpointerdown = function() {
+	//play();
+
+  if (mode == 'gameOver')
+    restart();
+  else {
+
+    if (mode == 'bounce')
+    	//play();
+      mode = 'fall';
+  }
+};
+ 
+restart();
+animate();
+
+
+</script>
+
+</body>
+</html>
